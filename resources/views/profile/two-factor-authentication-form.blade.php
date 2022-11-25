@@ -1,28 +1,24 @@
 <x-jet-action-section>
     <x-slot name="title">
-        {{ __('Two Factor Authentication') }}
+        {{ __('site.tow_factor') }}
     </x-slot>
 
     <x-slot name="description">
-        {{ __('Add additional security to your account using two factor authentication.') }}
+        {{ __('site.tow_factor_note') }}
     </x-slot>
 
     <x-slot name="content">
         <h3 class="text-lg font-medium text-gray-900">
             @if ($this->enabled)
-                @if ($showingConfirmation)
-                    {{ __('Finish enabling two factor authentication.') }}
-                @else
-                    {{ __('You have enabled two factor authentication.') }}
-                @endif
+                {{ __('site.tow_factor_enable') }}
             @else
-                {{ __('You have not enabled two factor authentication.') }}
+                {{ __('site.tow_factor_disable') }}
             @endif
         </h3>
 
         <div class="mt-3 max-w-xl text-sm text-gray-600">
             <p>
-                {{ __('When two factor authentication is enabled, you will be prompted for a secure, random token during authentication. You may retrieve this token from your phone\'s Google Authenticator application.') }}
+                {{ __('site.tow_factor_note') }}
             </p>
         </div>
 
@@ -30,41 +26,19 @@
             @if ($showingQrCode)
                 <div class="mt-4 max-w-xl text-sm text-gray-600">
                     <p class="font-semibold">
-                        @if ($showingConfirmation)
-                            {{ __('To finish enabling two factor authentication, scan the following QR code using your phone\'s authenticator application or enter the setup key and provide the generated OTP code.') }}
-                        @else
-                            {{ __('Two factor authentication is now enabled. Scan the following QR code using your phone\'s authenticator application or enter the setup key.') }}
-                        @endif
+                        {{ __('site.tow_factor_enabled') }}
                     </p>
                 </div>
 
-                <div class="mt-4">
+                <div class="mt-4 dark:p-4 dark:w-56 dark:bg-white">
                     {!! $this->user->twoFactorQrCodeSvg() !!}
                 </div>
-
-                <div class="mt-4 max-w-xl text-sm text-gray-600">
-                    <p class="font-semibold">
-                        {{ __('Setup Key') }}: {{ decrypt($this->user->two_factor_secret) }}
-                    </p>
-                </div>
-
-                @if ($showingConfirmation)
-                    <div class="mt-4">
-                        <x-jet-label for="code" value="{{ __('Code') }}" />
-
-                        <x-jet-input id="code" type="text" name="code" class="block mt-1 w-1/2" inputmode="numeric" autofocus autocomplete="one-time-code"
-                            wire:model.defer="code"
-                            wire:keydown.enter="confirmTwoFactorAuthentication" />
-
-                        <x-jet-input-error for="code" class="mt-2" />
-                    </div>
-                @endif
             @endif
 
             @if ($showingRecoveryCodes)
                 <div class="mt-4 max-w-xl text-sm text-gray-600">
                     <p class="font-semibold">
-                        {{ __('Store these recovery codes in a secure password manager. They can be used to recover access to your account if your two factor authentication device is lost.') }}
+                        {{ __('site.tow_factor_save_codes') }}
                     </p>
                 </div>
 
@@ -77,47 +51,32 @@
         @endif
 
         <div class="mt-5">
-            @if (! $this->enabled)
+            @if (!$this->enabled)
                 <x-jet-confirms-password wire:then="enableTwoFactorAuthentication">
                     <x-jet-button type="button" wire:loading.attr="disabled">
-                        {{ __('Enable') }}
+                        {{ __('site.tow_factor_ok') }}
                     </x-jet-button>
                 </x-jet-confirms-password>
             @else
                 @if ($showingRecoveryCodes)
                     <x-jet-confirms-password wire:then="regenerateRecoveryCodes">
                         <x-jet-secondary-button class="mr-3">
-                            {{ __('Regenerate Recovery Codes') }}
+                            {{ __('site.tow_factor_regenerate') }}
                         </x-jet-secondary-button>
-                    </x-jet-confirms-password>
-                @elseif ($showingConfirmation)
-                    <x-jet-confirms-password wire:then="confirmTwoFactorAuthentication">
-                        <x-jet-button type="button" class="mr-3" wire:loading.attr="disabled">
-                            {{ __('Confirm') }}
-                        </x-jet-button>
                     </x-jet-confirms-password>
                 @else
                     <x-jet-confirms-password wire:then="showRecoveryCodes">
                         <x-jet-secondary-button class="mr-3">
-                            {{ __('Show Recovery Codes') }}
+                            {{ __('site.tow_factor_show') }}
                         </x-jet-secondary-button>
                     </x-jet-confirms-password>
                 @endif
 
-                @if ($showingConfirmation)
-                    <x-jet-confirms-password wire:then="disableTwoFactorAuthentication">
-                        <x-jet-secondary-button wire:loading.attr="disabled">
-                            {{ __('Cancel') }}
-                        </x-jet-secondary-button>
-                    </x-jet-confirms-password>
-                @else
-                    <x-jet-confirms-password wire:then="disableTwoFactorAuthentication">
-                        <x-jet-danger-button wire:loading.attr="disabled">
-                            {{ __('Disable') }}
-                        </x-jet-danger-button>
-                    </x-jet-confirms-password>
-                @endif
-
+                <x-jet-confirms-password wire:then="disableTwoFactorAuthentication">
+                    <x-jet-danger-button wire:loading.attr="disabled">
+                        {{ __('site.tow_factor_no') }}
+                    </x-jet-danger-button>
+                </x-jet-confirms-password>
             @endif
         </div>
     </x-slot>
