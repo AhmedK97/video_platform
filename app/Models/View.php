@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class View extends Model
 {
     use HasFactory;
+
+
+    public function video()
+    {
+        return $this->belongsTo(Video::class);
+    }
 }
