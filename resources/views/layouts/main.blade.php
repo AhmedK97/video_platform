@@ -8,20 +8,19 @@
     <title>Video PlatForm</title>
     {{-- BootStrap --}}
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
-        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
-        integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous">
-    </script>
-    {{-- FontAwesome --}}
-    <script src="https://kit.fontawesome.com/ad7a78e71f.js" crossorigin="anonymous"></script>
+    <!-- Bootstrap CDN Links -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <!-- Tailwind CSS CDN Links -->
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    {{-- FontAwesome  --}}
+    <script src="https://kit.fontawesome.com/ad7a78e71f.js" crossorigin="anonymous"></script>
+    {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> --}}
+
+    {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
 
 
 </head>
@@ -114,7 +113,7 @@
                                     <div class="mt-3 space-y-1">
                                         <!-- Account Management -->
                                         <x-jet-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
-                                            {{ __('Profile') }}
+                                            {{ __('site.profile') }}
                                         </x-jet-responsive-nav-link>
 
                                         @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
@@ -130,7 +129,7 @@
 
                                             <x-jet-responsive-nav-link href="{{ route('logout') }}"
                                                 @click.prevent="$root.submit();">
-                                                {{ __('Log Out') }}
+                                                {{ __('site.logout') }}
                                             </x-jet-responsive-nav-link>
                                         </form>
 
@@ -139,20 +138,20 @@
                                             <div class="border-t border-gray-200"></div>
 
                                             <div class="block px-4 py-2 text-xs text-gray-400">
-                                                {{ __('Manage Team') }}
+                                                {{ __('site.manage_team') }}
                                             </div>
 
                                             <!-- Team Settings -->
                                             <x-jet-responsive-nav-link
                                                 href="{{ route('teams.show', Auth::user()->currentTeam->id) }}"
                                                 :active="request()->routeIs('teams.show')">
-                                                {{ __('Team Settings') }}
+                                                {{ __('site.team_settings') }}
                                             </x-jet-responsive-nav-link>
 
                                             @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
                                                 <x-jet-responsive-nav-link href="{{ route('teams.create') }}"
                                                     :active="request()->routeIs('teams.create')">
-                                                    {{ __('Create New Team') }}
+                                                    {{ __('site.new_team') }}
                                                 </x-jet-responsive-nav-link>
                                             @endcan
 
@@ -160,7 +159,7 @@
 
                                             <!-- Team Switcher -->
                                             <div class="block px-4 py-2 text-xs text-gray-400">
-                                                {{ __('Switch Teams') }}
+                                                {{ __('site.team_switch') }}
                                             </div>
 
                                             @foreach (Auth::user()->allTeams() as $team)
