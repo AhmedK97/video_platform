@@ -18,9 +18,11 @@
     <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
     {{-- FontAwesome  --}}
     <script src="https://kit.fontawesome.com/ad7a78e71f.js" crossorigin="anonymous"></script>
-    {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> --}}
 
-    {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+    {{-- <link href="{{ asset('css/style.css') }}" rel="stylesheet"> --}}
+    {{-- <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}"> --}}
+
+    @vite(['resources/css/style.css', 'resources/js/app.js'])
 
 
 </head>
