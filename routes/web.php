@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\videoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,3 +27,5 @@ Route::middleware([
         return view('layouts.main');
     })->name('dashboard');
 });
+
+Route::resource('videos', videoController::class);

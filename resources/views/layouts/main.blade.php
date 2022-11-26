@@ -53,7 +53,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="{{ route('videos.create') }}">
                             <i class="fas fa-upload">
                                 رفع فيديو
                             </i>
@@ -171,14 +171,20 @@
                                 </div>
                             </div>
                         </li>
-
-
                     @endguest
                 </ul>
             </div>
         </nav>
+        <main class="py-4">
+            @if (Session::has('success'))
+                <div class="p-3 mb-2 bg-success text-white rounded mx-auto col-8">
+                    <span class="text-center">{{ session('success') }}</span>
+                </div>
+            @endif
+            @yield('content')
+        </main>
     </div>
-
+    @yield('script')
 </body>
 
 </html>
