@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
 
-use FFMpeg;
+// use FFMpeg\FFMpeg;
+// // use FFMpeg\FFProbe;
+
+// use FFMpeg\Filters\Video\VideoFilters;
+// use FFMpeg\Format\Video\X264;
+// use FFMpeg\Format\Video\Dimension;
+use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
+use FFMpeg\Coordinate\Dimension;
 use FFMpeg\Format\Video\X264;
-use FFMpeg\Format\Video\Dimension;
 
 class videoController extends Controller
 {
@@ -77,7 +84,7 @@ class videoController extends Controller
         $convertedName_720 = '720-' . $video->video_path;
 
 
-        FFMpeg::fromDisk('vedio')
+        FFMpeg::fromDisk('public')
             ->open($video->video_path)
             ->addFilter(function ($filters) {
                 $filters->resize(new Dimension(426, 240));
