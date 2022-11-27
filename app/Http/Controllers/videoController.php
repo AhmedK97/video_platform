@@ -2,20 +2,14 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Jobs\ConvertVideoForStreaming;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
-
-// use FFMpeg\FFMpeg;
-// // use FFMpeg\FFProbe;
-
-// use FFMpeg\Filters\Video\VideoFilters;
-// use FFMpeg\Format\Video\X264;
-// use FFMpeg\Format\Video\Dimension;
-use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
+use FFMpeg;
+// use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 use FFMpeg\Coordinate\Dimension;
 use FFMpeg\Format\Video\X264;
 
@@ -57,6 +51,7 @@ class videoController extends Controller
         ]);
         $randomPath = str::random(16);
         $videoPath = $randomPath . '.' . $request->video->getClientOriginalExtension();
+        // dd($videoPath);
         $imagePath = $randomPath . '.' . $request->image->getClientOriginalExtension();
         $image = Image::make($request->image)->resize(320, 180);
 
@@ -72,49 +67,7 @@ class videoController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        $lowBitFormat = (new X264('aac', 'libx264'))->setKiloBitrate(500);
-        $low2BitFormat = (new X264('aac', 'libx264'))->setKiloBitrate(900);
-        $MediumBitFormat = (new X264('aac', 'libx264'))->setKiloBitrate(1500);
-        $hightBitFormat = (new X264('aac', 'libx264'))->setKiloBitrate(3000);
-
-
-        $convertedName = '240-' . $video->video_path;
-        $convertedName_360 = '360-' . $video->video_path;
-        $convertedName_480 = '480-' . $video->video_path;
-        $convertedName_720 = '720-' . $video->video_path;
-
-
-        FFMpeg::fromDisk('public')
-            ->open($video->video_path)
-            ->addFilter(function ($filters) {
-                $filters->resize(new Dimension(426, 240));
-            })->export()
-            ->toDisk('public')
-            ->inFormat($lowBitFormat)
-            ->save($convertedName)
-
-            ->addFilter(function ($filters) {
-                $filters->resize(new Dimension(640, 360));
-            })->export()
-            ->toDisk('public')
-            ->inFormat($low2BitFormat)
-            ->save($convertedName_360)
-
-            ->addFilter(function ($filters) {
-                $filters->resize(new Dimension(854, 480));
-            })->export()
-            ->toDisk('public')
-            ->inFormat($MediumBitFormat)
-            ->save($convertedName_480)
-
-            ->addFilter(function ($filters) {
-                $filters->resize(new Dimension(1280, 720));
-            })->export()
-            ->toDisk('public')
-            ->inFormat($hightBitFormat)
-            ->save($convertedName_720);
-
-
+        ConvertVideoForStreaming::dispatch($video);
 
         return redirect()->back()->with('success', 'سيكون مقطع الفيديو متوفر عند الانتهاء من المعالجه');
     }
