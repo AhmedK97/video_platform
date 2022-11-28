@@ -37,7 +37,7 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mx-auto">
+                <ul class="mx-auto navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" href="#">
                             <i class="fas fa-home">
@@ -63,7 +63,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="{{ route('videos.index') }}">
                             <i class="fas fa-play-circle">
                                 فديوهاتى
                             </i>
@@ -81,34 +81,34 @@
 
                 <ul class="navbar-nav ">
                     @guest
-                        <li class="nav-item mt-2">
+                        <li class="mt-2 nav-item">
                             <a href="{{ route('login') }}" class="nav_link">{{ __('تسجيل الدخول') }}</a>
                         </li>
                         @if (Route::has('regester'))
-                            <li class="nav-item mt-2">
+                            <li class="mt-2 nav-item">
                                 <a href="{{ route('register') }}" class="nav-link">{{ __('انشاء حساب') }}</a>
                             </li>
                         @endif
                     @else
-                        <li class="nav-item dropdown justify-content-left mt-2 ">
+                        <li class="mt-2 nav-item dropdown justify-content-left ">
                             <a id="navbarDropdown" class="nav-link" href="#" data-toggle="dropdown">
-                                <img class="h-8 w-8 rounded-full" src="{{ Auth::user()->profile_photo_url }}"
+                                <img class="w-8 h-8 rounded-full" src="{{ Auth::user()->profile_photo_url }}"
                                     alt="{{ Auth::user()->name }}" />
                             </a>
-                            <div class="dropdown-menu dropdown-menu-left px-2 text-right mt-2">
+                            <div class="px-2 mt-2 text-right dropdown-menu dropdown-menu-left">
                                 <div class="pt-4 pb-1 border-t border-gray-200">
                                     <div class="flex items-center px-4">
                                         @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                                            <div class="shrink-0 mr-3">
-                                                <img class="h-10 w-10 rounded-full object-cover"
+                                            <div class="mr-3 shrink-0">
+                                                <img class="object-cover w-10 h-10 rounded-full"
                                                     src="{{ Auth::user()->profile_photo_url }}"
                                                     alt="{{ Auth::user()->name }}" />
                                             </div>
                                         @endif
 
                                         <div>
-                                            <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                                            <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                                            <div class="text-base font-medium text-gray-800">{{ Auth::user()->name }}</div>
+                                            <div class="text-sm font-medium text-gray-500">{{ Auth::user()->email }}</div>
                                         </div>
                                     </div>
 
@@ -179,7 +179,7 @@
         </nav>
         <main class="py-4">
             @if (Session::has('success'))
-                <div class="p-3 mb-2 bg-success text-white rounded mx-auto col-8">
+                <div class="p-3 mx-auto mb-2 text-white rounded bg-success col-8">
                     <span class="text-center">{{ session('success') }}</span>
                 </div>
             @endif

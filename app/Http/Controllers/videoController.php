@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ConvertVideoForStreaming;
+use App\Models\Convertedvideo;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -15,6 +16,10 @@ use FFMpeg\Format\Video\X264;
 
 class videoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -22,7 +27,9 @@ class videoController extends Controller
      */
     public function index()
     {
-        //
+        $videos = auth()->user()->videos->sortByDesc('created_at');
+        $title = 'اخر الفديوهات المرفوعه';
+        return view('videos.my-videos', compact('videos', 'title'));
     }
 
     /**
@@ -91,7 +98,8 @@ class videoController extends Controller
      */
     public function edit($id)
     {
-        //
+        $video = Video::where('id', $id)->first();
+        return view('videos.edit-video', compact('video'));
     }
 
     /**
@@ -103,7 +111,34 @@ class videoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'title' => 'required',
+        ]);
+
+        $video = Video::where('id', $id)->first();
+
+        if ($request->has('image')) {
+
+            $randomPath = Str::random(16);
+            $newPath =  $randomPath . '.' . $request->image->getClientOriginalExtension();
+
+            Storage::delete($video->image_path);
+
+            $image = Image::make($request->image)->resize(320, 180);
+            //Store with stream();
+            $path = Storage::put($newPath, $image->stream());
+
+            $video->image_path = $newPath;
+        }
+
+        $video->title = $request->title;
+
+        $video->save();
+
+        return redirect('/videos')->with(
+            'success',
+            'تم تعديل معلومات الفيديو بنجاح'
+        );
     }
 
     /**
@@ -114,6 +149,33 @@ class videoController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $video = Video::where('id', $id)->first();
+        $convertedVideos = Convertedvideo::where('video_id', $id)->get();
+
+        foreach ($convertedVideos as $covertedVideo) {
+            Storage::delete([
+                $covertedVideo->mp4_Format_240,
+                $covertedVideo->mp4_Format_360,
+                $covertedVideo->mp4_Format_480,
+                $covertedVideo->mp4_Format_720,
+                $covertedVideo->mp4_Format_1080,
+                $covertedVideo->webm_Format_240,
+                $covertedVideo->webm_Format_360,
+                $covertedVideo->webm_Format_480,
+                $covertedVideo->webm_Format_720,
+                $covertedVideo->webm_Format_1080,
+                $video->image_path
+            ]);
+        }
+        $video->delete();
+        return back()->with('success', 'تم حذف الفيديو بنجاح');
+    }
+
+
+    public function search(Request $request)
+    {
+        $videos = Video::where('title', 'like', "%{$request->term}%")->paginate(12);
+        $title = ' عرض نتائج البحث عن: ' . $request->term;
+        return view('videos.my-videos', compact('videos', 'title'));
     }
 }
