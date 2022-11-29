@@ -10,17 +10,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-
 use FFMpeg\Coordinate\Dimension;
 use FFMpeg\Format\Video\X264;
 use FFMpeg;
 use FFMpeg\Filters\Video\VideoFilters;
 use FFMpeg\Format\Video\WebM;
 use Storage;
-// use FFMpeg\Filters\Video\VideoFilters;
-// use App\Models\Notification;
-// use App\Models\Alert;
-// use App\Events\FailedNotification;
+
 
 class ConvertVideoForStreaming implements ShouldQueue
 {
@@ -110,7 +106,10 @@ class ConvertVideoForStreaming implements ShouldQueue
     public function handle()
     {
         $ffprobe = FFMpeg\FFProbe::create();
+
         $video1 = $ffprobe->streams(public_path('/storage/' . $this->video->video_path))->videos()->first();
+
+
         $width = $video1->get('width');
         $height = $video1->get('height');
 
@@ -181,22 +180,6 @@ class ConvertVideoForStreaming implements ShouldQueue
 
         $converted_video->save();
 
-        // $notification = new Notification();
-
-        // $notification->user_id = $this->video->user_id;
-        // $notification->notification = $this->video->title;
-        // $notification->save();
-
-        // $data = [
-        //     'video_title' => $this->video->title,
-        // ];
-
-        // event(new RealNotification($data));
-
-        // $alert = Alert::where('user_id', $this->video->user_id)->first();
-
-        // $alert->alert++;
-        // $alert->save();
 
         $this->video->update([
             'processed' => true,
@@ -206,7 +189,6 @@ class ConvertVideoForStreaming implements ShouldQueue
             'quality' => $quality,
         ]);
     }
-
 
 
 
