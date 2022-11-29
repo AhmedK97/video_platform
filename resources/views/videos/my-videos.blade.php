@@ -10,7 +10,6 @@
         </div>
         <hr>
         <br>
-
         <p class="my-4">{{ $title }}</p>
         <div class="row">
             @forelse($videos as $video)
@@ -20,11 +19,7 @@
                             <div class="card-icons">
                                 @php
                                     $hours_add_zero = sprintf('%02d', $video->hours);
-                                @endphp
-                                @php
                                     $minutes_add_zero = sprintf('%02d', $video->minutes);
-                                @endphp
-                                @php
                                     $seconds_add_zero = sprintf('%02d', $video->seconds);
                                 @endphp
                                 <a href="/videos/{{ $video->id }}">
@@ -44,9 +39,7 @@
                                         <span class="d-block"><i class="fas fa-eye"></i> {{ $view->views_number }}
                                             مشاهدة</span>
                                     @endforeach
-
                                     <i class="fas fa-clock"></i> <span>{{ $video->created_at->diffForHumans() }}</span>
-
                                     @auth
                                         @if ($video->user_id == auth()->user()->id || auth()->user()->administration_level > 0)
                                             @if (!auth()->user()->block)
