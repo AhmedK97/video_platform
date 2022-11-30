@@ -19,8 +19,8 @@
     {{-- FontAwesome  --}}
     <script src="https://kit.fontawesome.com/ad7a78e71f.js" crossorigin="anonymous"></script>
 
-    {{-- <link href="{{ asset('css/style.css') }}" rel="stylesheet"> --}}
-    {{-- <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}"> --}}
+    {{-- videojs --}}
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
 
     @vite(['resources/css/style.css', 'resources/js/app.js'])
 

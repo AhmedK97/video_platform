@@ -18,7 +18,7 @@ class Video extends Model
 
     public function convertedvideos()
     {
-        return $this->hasMany(convertedvideos::class);
+        return $this->hasMany(convertedvideo::class);
     }
 
     public function likes()
