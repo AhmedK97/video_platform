@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\ConvertVideoForStreaming;
 use App\Models\Convertedvideo;
+use App\Models\Like;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -13,6 +14,7 @@ use FFMpeg;
 // use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 use FFMpeg\Coordinate\Dimension;
 use FFMpeg\Format\Video\X264;
+use Illuminate\Support\Facades\Auth;
 
 class videoController extends Controller
 {
@@ -87,7 +89,17 @@ class videoController extends Controller
      */
     public function show(video $video)
     {
-        return view('videos.show', compact('video'));
+        $countLike = Like::where('video_id', $video->id)->where('like', '1')->count();
+        $countDisLike = Like::where('video_id', $video->id)->where('like', '0')->count();
+
+        if (Auth::check()) {
+            $userLike = Auth::user()->likes()->where('video_id', $video->id)->first();
+            // dd($userLike);
+        } else {
+            $userLike = 0;
+        }
+
+        return view('videos.show', compact('video', 'countLike', 'countDisLike', 'userLike'));
     }
 
     /**
