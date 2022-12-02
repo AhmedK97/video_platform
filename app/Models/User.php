@@ -84,7 +84,7 @@ class User extends Authenticatable
         return $this->hasOne(Alert::class);
     }
 
-    public function videoHistory()
+    public function videoInHistory()
     {
         return $this->belongsToMany(Video::class, 'video_user', 'user_id', 'video_id')->withTimestamps()->withPivot('id');
     }

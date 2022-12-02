@@ -6,21 +6,18 @@ use App\Jobs\ConvertVideoForStreaming;
 use App\Models\Convertedvideo;
 use App\Models\Like;
 use App\Models\Video;
+use App\Models\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
-use FFMpeg;
-// use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
-use FFMpeg\Coordinate\Dimension;
-use FFMpeg\Format\Video\X264;
 use Illuminate\Support\Facades\Auth;
 
 class videoController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except(['index', 'show', 'addView']);
     }
     /**
      * Display a listing of the resource.
@@ -76,6 +73,12 @@ class videoController extends Controller
             'user_id' => auth()->id(),
         ]);
 
+        $view = View::create([
+            'video_id' => $video->id,
+            'user_id' => auth()->id(),
+            'views_number' => 0
+        ]);
+
         ConvertVideoForStreaming::dispatch($video);
 
         return redirect()->back()->with('success', 'سيكون مقطع الفيديو متوفر عند الانتهاء من المعالجه');
@@ -99,7 +102,15 @@ class videoController extends Controller
             $userLike = 0;
         }
 
-        return view('videos.show', compact('video', 'countLike', 'countDisLike', 'userLike'));
+        // video user history
+        if (Auth::check()) {
+            auth()->user()->videoInHistory()->attach($video->id);
+        }
+
+        //show comment sortByDesc(created_at)
+        $comments = $video->comments->sortByDesc('created_at');
+
+        return view('videos.show', compact('video', 'countLike', 'countDisLike', 'userLike', 'comments'));
     }
 
     /**
@@ -189,5 +200,18 @@ class videoController extends Controller
         $videos = Video::where('title', 'like', "%{$request->term}%")->paginate(12);
         $title = ' عرض نتائج البحث عن: ' . $request->term;
         return view('videos.my-videos', compact('videos', 'title'));
+    }
+
+    //add view video
+    public function addView(Request $request)
+    {
+        $views = View::where('video_id', $request->videoId)->first();
+
+        $views->views_number++;
+
+        $views->save();
+
+        $viewsNumbers = $views->views_number;
+        return response()->json(['viewsNumbers' => $viewsNumbers]);
     }
 }

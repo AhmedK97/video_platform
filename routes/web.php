@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\likeController;
 use App\Http\Controllers\videoController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +31,26 @@ Route::middleware([
     })->name('dashboard');
 });
 Route::post('/like', [likeController::class, 'likeVideo'])->name('like');
+
+Route::post('/view', [videoController::class, 'addView'])->name('view');
+
+
+Route::post('/comment', [CommentController::class, 'saveComment'])->name('comment');
+
+//comment resource
+Route::resource('comments', CommentController::class);
+
+// delete comment
+// Route::post('/delete/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
+// edit specific  comment
+// Route::get('/comment/{id}/edit', [CommentController::class, 'edit'])->name('comment.edit');
+// update specific  comment
+// Route::patch('/comment/{id}', [CommentController::class, 'update'])->name('comment.update');
+
+
+// history resource
+Route::resource('/history', HistoryController::class);
+
 
 Route::resource('videos', videoController::class);
 

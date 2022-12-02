@@ -86,16 +86,73 @@
                         @endif
                     </a>
 
+                    {{-- @dump($video->views) --}}
                     @foreach ($video->views as $view)
                         <span class="float-right">عدد المشاهدات <span
                                 class="viewsNumber">{{ $view->views_number }}</span></span>
                     @endforeach
+
+
 
                     <div class="mt-5 loginAlert">
 
                     </div>
                 </div>
 
+                <div class="px-2 mt-4">
+                    <div class="comments">
+                        <div class="mb-3">
+                            <span>التعليقات</span>
+                        </div>
+                        <div>
+                            <textarea class="form-control" id="comment" name="comment" rows="4" placeholder="إضافة تعليق عام"></textarea>
+                            <button type="submit" class="mt-3 btn btn-info saveComment">تعليق</button>
+
+                            <div class="mt-5 commentAlert"></div>
+
+                           <div class="commentBody">
+                                @foreach ($comments as $comment)
+                                    <div class="mt-4 card">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    <img src="{{ $comment->user->profile_photo_url }}" width="100px"
+                                                        class="rounded-full" />
+                                                </div>
+                                                <div class="col-10">
+                                                     @if (Auth::check())
+                                                        @if ($comment->user_id == auth()->user()->id || auth()->user()->administration_level > 0)
+                                                            @if (!auth()->user()->block)
+                                                                <form method="POST"
+                                                                    action="{{ route('comments.destroy', $comment->id) }}"
+                                                                    onsubmit="return confirm('هل أنت متأكد أنك تريد حذف التعليق هذا؟')">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="float-left"><i
+                                                                            class="far fa-trash-alt text-danger fa-lg"></i></button>
+                                                                </form>
+                                                                <form method="GET"
+                                                                    action="{{ route('comments.edit', $comment->id) }}">
+                                                                    @csrf
+                                                                    <button type="submit" class="float-left"><i
+                                                                            class="ml-3 far fa-edit text-success fa-lg"></i></button>
+                                                                </form>
+                                                            @endif
+                                                        @endif
+                                                    @endif
+                                                    <p class="mt-3 mb-2"><strong>{{ $comment->user->name }}</strong></p>
+                                                    <i class="far fa-clock"></i> <span
+                                                        class="comment_date text-secondary">{{ $comment->created_at->diffForHumans() }}</span>
+                                                    <p class="mt-3">{{ $comment->body }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -112,7 +169,6 @@
             var video = document.getElementById("videoPlayer");
             var curTime = video.currentTime;
             var selected = document.getElementById("qualityPick").value;
-
             if (selected == '1080') {
                 source = document.getElementById("webm_source").src =
                     "{{ Storage::url($video_converted->webm_Format_1080) }}";
@@ -139,7 +195,6 @@
                 source = document.getElementById("mp4_source").src =
                     "{{ Storage::url($video_converted->mp4_Format_240) }}";
             }
-
             video.load();
             video.play();
             video.currentTime = curTime;
@@ -158,10 +213,10 @@
                 event.preventDefault();
                 var html =
                     '<div class="alert alert-danger">\
-                        <ul>\
-                           <li class="loginAlert">يجب تسجيل الدخول لكي تستطيع الإعجاب بالفيديو</li>\
-                        </ul>\
-                      </div>';
+                                                                                                                                                                                                            <ul>\
+                                                                                                                                                                                                               <li class="loginAlert">يجب تسجيل الدخول لكي تستطيع الإعجاب بالفيديو</li>\
+                                                                                                                                                                                                            </ul>\
+                                                                                                                                                                                                          </div>';
                 $(".loginAlert").html(html);
 
             } else {
@@ -208,4 +263,115 @@
             }
         });
     </script>
+
+    <script>
+        $('#videoPlayer').on('ended', function(e) {
+            var token = '{{ Session::token() }}';
+            var urlComment = '{{ route('view') }}';
+            event.preventDefault();
+            videoId = $("#videoId").val();
+            $.ajax({
+                method: 'POST',
+                url: urlComment,
+                data: {
+                    videoId: videoId,
+                    _token: token
+                },
+                success: function(data) {
+                    $('.viewsNumber').html(data.viewsNumbers);
+                }
+            })
+        })
+    </script>
+
+<script>
+    $('.saveComment').on('click', function(event) {
+        var token = '{{ Session::token() }}';
+        var urlComment = '{{ route('comment') }}';
+
+        var videoId = 0;
+
+        var AuthUser = "{{{ (Auth::user()) ? 0 : 1 }}}";
+        // var blocked = "{{{ (Auth::user()) ? (Auth::user()->block) ? 1 : 0 : 2}}}";
+
+        if (AuthUser == '1') {
+            event.preventDefault();
+            var html='<div class="alert alert-danger">\
+                    <ul>\
+                        <li>يجب تسجيل الدخول لكي تستطيع التعليق على الفيديو</li>\
+                    </ul>\
+                </div>';
+            $(".commentAlert ").html(html);
+        }
+        // else if (blocked == '1') {
+        //     var html='<div class="alert alert-danger">\
+        //                 <ul>\
+        //                     <li class="commentAlert">أنت ممنوع من التعليق</li>\
+        //                 </ul>\
+        //             </div>';
+        //     $(".commentAlert ").html(html);
+
+        // }
+        else if ($('#comment').val().length == 0) {
+            var html='<div class="alert alert-danger">\
+                    <ul>\
+                        <li>الرجاء كتابة تعليق</li>\
+                    </ul>\
+                </div>';
+            $(".commentAlert ").html(html);
+        }
+        else {
+            $(".commentAlert ").html('');
+            event.preventDefault();
+            videoId = $("#videoId").val();
+            comment = $("#comment").val();
+
+            $.ajax({
+                method: 'POST',
+                url: urlComment,
+                data: {
+                    comment: comment,
+                    videoId: videoId,
+                    _token: token
+                },
+                success : function(data) {
+                    $("#comment").val('');
+
+                    destroyUrl = "{{route('comments.destroy', 'des_id')}}";
+                    destroy = destroyUrl.replace('des_id', data.commentId);
+
+                    editUrl = "{{route('comments.edit', 'id')}}";
+                    url = editUrl.replace('id', data.commentId);
+
+                    var html='  <div class="mt-5 mb-3 card">\
+                                    <div class="card-body">\
+                                        <div class="row">\
+                                            <div class="col-2">\
+                                                <img src="'+data.userImage+'" width="100px" class="rounded-full"/>\
+                                            </div>\
+                                            <div class="col-10">\
+                                                <form method="POST" action="'+destroy+'">\
+                                                    @csrf\
+                                                    @method('DELETE')\
+                                                    <button type="submit" class="float-left" ><i class="far fa-trash-alt text-danger fa-lg"></i></button>\
+                                                </form>\
+                                                <form method="GET" action="'+url+'">\
+                                                    @csrf\
+                                                    <button type="submit" class="float-left"><i class="ml-3 far fa-edit text-success fa-lg"></i></button>\
+                                                </form>\
+                                                <p class="mt-3 mb-2"><strong>'+data.userName+'</strong></p>\
+                                                <i class="far fa-clock"></i> <span class="comment_date text-secondary">'+data.commentDate+'</span>\
+                                                <p class="mt-3" >'+comment+'</p>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </div>';
+
+                    $(".commentBody").prepend(html);
+                }
+            })
+        }
+    });
+</script>
+
 @endsection

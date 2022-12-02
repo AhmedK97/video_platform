@@ -109,7 +109,6 @@ class ConvertVideoForStreaming implements ShouldQueue
 
         $video1 = $ffprobe->streams(public_path('/storage/' . $this->video->video_path))->videos()->first();
 
-
         $width = $video1->get('width');
         $height = $video1->get('height');
 
@@ -168,18 +167,14 @@ class ConvertVideoForStreaming implements ShouldQueue
         }
 
         Storage::disk('public')->delete($this->video->video_path);
-
         $converted_video = new Convertedvideo;
-
         for ($i = 0; $i < 5; $i++) {
             $converted_video->{'mp4_Format_' . $this->videoHeight[$i]} = $this->names[$i][0];
             $converted_video->{'webm_Format_' . $this->videoHeight[$i]} = $this->names[$i][1];
         }
 
         $converted_video->video_id = $this->video->id;
-
         $converted_video->save();
-
 
         $this->video->update([
             'processed' => true,
@@ -196,4 +191,14 @@ class ConvertVideoForStreaming implements ShouldQueue
     {
         return preg_replace('/\\.[^.\\s]{3,4}$/', '', $filename) . $type;
     }
+
+    //   ffmpeg convert video h264?
+    //   $ffmpeg = FFMpeg\FFMpeg::create();
+
+    //   $video = $ffmpeg->open('path/to/movie.mov');
+    //   $format->setAudioCodec("libmp3lame");
+
+    //  $video
+    //      ->save($format, 'path/to/movie.mp4');
+
 }
