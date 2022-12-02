@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\likeController;
+use App\Http\Controllers\MainController;
 use App\Http\Controllers\videoController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,12 @@ Route::middleware([
         return view('layouts.main');
     })->name('dashboard');
 });
+
+route::get('/', [MainController::class, 'main'])->name('main');
+
+route::get('main/{channel}/videos', [MainController::class, 'ChannelsVideo'])->name('main.chanels.video');
+
+
 Route::post('/like', [likeController::class, 'likeVideo'])->name('like');
 
 Route::post('/view', [videoController::class, 'addView'])->name('view');
@@ -50,7 +57,7 @@ Route::resource('comments', CommentController::class);
 
 // history resource
 Route::resource('/history', HistoryController::class);
-
+Route::post('/history', [HistoryController::class, 'destroyAll'])->name('history.destroyAll');
 
 Route::resource('videos', videoController::class);
 

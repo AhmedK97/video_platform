@@ -88,8 +88,13 @@ class HistoryController extends Controller
      */
     public function destroy($id)
     {
-        // delete history
+        auth()->user()->videoInHistory()->wherePivot('Id', $id)->detach();
+        return back()->with('success', 'تم حذف الفيديو من المشاهدات السابقة');
+    }
 
-
+    public function destroyAll()
+    {
+        auth()->user()->videoInHistory()->detach();
+        return back()->with('success', 'تم حذف جميع المشاهدات السابقة');
     }
 }

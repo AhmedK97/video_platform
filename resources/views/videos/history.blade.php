@@ -3,14 +3,24 @@
 @section('content')
     <div class="mx-4">
 
-        <hr>
+        @if ($videos->count() > 0)
+            <div class="row justify-content-center">
+                <form method="POST" action="{{ route('history.destroyAll') }}"
+                    class="form-inline col-md-6 justify-content-center"
+                    onsubmit="return confirm('هل انت متاكد من حذف السجل باكمله')">
+                    @csrf
+                    @method('Post')
+                    <button type="submit" class="btn btn-danger">حذف السجل</button>
+                </form>
+            </div>
+        @endif
         <br>
         <p class="my-4">{{ $title }}</p>
         <div class="row">
             @forelse($videos as $video)
                 @if ($video->processed)
                     <div class="col-sm-6 col-md-4 col-lg-3">
-                        <div class="card">
+                        <div class="p-1 mb-4 card">
                             <div class="card-icons">
                                 @php
                                     $hours_add_zero = sprintf('%02d', $video->hours);
@@ -39,7 +49,7 @@
                                     @auth
                                         @if ($video->user_id == auth()->user()->id || auth()->user()->administration_level > 0)
                                             @if (!auth()->user()->block)
-                                                <form method="POST" action=" "
+                                                <form method="POST" action="{{ route('history.destroy', $video->pivot->id) }}"
                                                     onsubmit="return confirm('هل أنت متأكد أنك تريد حذف مقطع الفيديو هذا؟')">
                                                     @csrf
                                                     @method('DELETE')

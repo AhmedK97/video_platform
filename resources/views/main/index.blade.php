@@ -15,7 +15,7 @@
             @forelse($videos as $video)
                 @if ($video->processed)
                     <div class="col-sm-6 col-md-4 col-lg-3">
-                        <div class="p-1 mb-4 card ">
+                        <div class="p-1 mb-4 card">
                             <div class="card-icons">
                                 @php
                                     $hours_add_zero = sprintf('%02d', $video->hours);
@@ -62,6 +62,13 @@
                                     @endauth
                                 </small>
                             </div>
+
+                            <a href="{{ route('main.chanels.video', $video->user) }}" class="channel-img">
+
+                                <img src="{{ $video->user->profile_photo_url }}" class="my-1 mr-3 rounded-full d-inline"
+                                    width="30" alt="">
+                                <span class="card-text">{{ $video->user->name }}</span>
+                            </a>
                         </div>
                     </div>
                 @endif
