@@ -27,6 +27,11 @@ Route::get('/admin', function () {
 Route::prefix('/admin')->middleware('can:update-video')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');
     Route::get('/channels', [ChannelController::class, 'adminIndex'])->name('channels.index');
+    Route::patch('/{user}/channels', [ChannelController::class, 'adminUpdate'])->name('channels.update')->middleware('can:update-user');
+    Route::delete('/channel/{id}', [ChannelController::class, 'adminDistroy'])->name('channel.delete')->middleware('can:update-user');
+    Route::patch('{user}/block', [ChannelController::class, 'adminBlock'])->name('channel.block')->middleware('can:update-user');
+    Route::get('/channels/blocked', [ChannelController::class, 'blockedChannels'])->name('channels.block')->middleware('can:update-user');
+    Route::patch('/{user}/unblock', [ChannelController::class, 'userUnblock'])->name('channel.unblock')->middleware('can:update-user');
 });
 
 Route::middleware([

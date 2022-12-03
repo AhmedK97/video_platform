@@ -31,7 +31,8 @@
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->isSuperAdmin() ? 'مدير عام' : ($user->isAdmin() ? 'مدير' : 'مستخدم') }}</td>
                             <td>
-                                <form class="ml-4 form-inline" method="POST" action="" style="display:inline-block">
+                                <form class="ml-4 form-inline" method="POST" action="{{ route('channels.update', $user) }}"
+                                    style="display:inline-block">
                                     @method('patch')
                                     @csrf
                                     <select class="form-control form-control-sm" name="administration_level">
@@ -45,7 +46,8 @@
                                 </form>
                             </td>
                             <td>
-                                <form method="POST" action="" style="display:inline-block">
+                                <form method="POST" action="{{ route('channel.delete', $user) }}"
+                                    style="display:inline-block">
                                     @method('delete')
                                     @csrf
                                     @if (auth()->user() != $user && !$user->isSuperAdmin())
@@ -58,7 +60,8 @@
                                 </form>
                             </td>
                             <td>
-                                <form method="POST" action="" style="display:inline-block">
+                                <form method="POST" action="{{ route('channel.block', $user) }}"
+                                    style="display:inline-block">
                                     @method('patch')
                                     @csrf
                                     @if (auth()->user() != $user && !$user->isSuperAdmin())

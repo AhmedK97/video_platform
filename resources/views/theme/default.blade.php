@@ -52,9 +52,9 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-                    @if (Session::has('flash_message'))
+                    @if (Session::has('success'))
                         <div class="p-3 mb-2 bg-success text-white rounded text-center">
-                            {{ session('flash_message') }}
+                            {{ session('success') }}
                         </div>
                     @endif
                     <!-- Page Heading -->

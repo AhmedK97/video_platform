@@ -292,7 +292,7 @@
         var videoId = 0;
 
         var AuthUser = "{{{ (Auth::user()) ? 0 : 1 }}}";
-        // var blocked = "{{{ (Auth::user()) ? (Auth::user()->block) ? 1 : 0 : 2}}}";
+        var blocked = "{{{ (Auth::user()) ? (Auth::user()->block) ? 1 : 0 : 2}}}";
 
         if (AuthUser == '1') {
             event.preventDefault();
@@ -303,15 +303,16 @@
                 </div>';
             $(".commentAlert ").html(html);
         }
-        // else if (blocked == '1') {
-        //     var html='<div class="alert alert-danger">\
-        //                 <ul>\
-        //                     <li class="commentAlert">أنت ممنوع من التعليق</li>\
-        //                 </ul>\
-        //             </div>';
-        //     $(".commentAlert ").html(html);
+        else if (blocked == '1') {
+            var html='<div class="alert alert-danger">\
+                        <ul>\
+                            <li class="commentAlert">أنت ممنوع من التعليق</li>\
+                        </ul>\
+                    </div>';
+            $(".commentAlert ").html(html);
 
-        // }
+        }
+
         else if ($('#comment').val().length == 0) {
             var html='<div class="alert alert-danger">\
                     <ul>\
@@ -320,6 +321,7 @@
                 </div>';
             $(".commentAlert ").html(html);
         }
+
         else {
             $(".commentAlert ").html('');
             event.preventDefault();

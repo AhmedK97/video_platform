@@ -21,8 +21,9 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
-            $table->unsignedInteger('administration_level')->default(0);
             $table->string('profile_photo_path', 2048)->nullable();
+            $table->unsignedInteger('administration_level')->default(0);
+            $table->unsignedInteger('block')->default(0);
             $table->timestamps();
         });
     }
