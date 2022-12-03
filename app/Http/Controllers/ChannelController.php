@@ -66,4 +66,12 @@ class ChannelController extends Controller
 
         return view('admin.channels.blocked', compact('users', 'title'));
     }
+
+    public function Channels()
+    {
+        $users = User::all()->sortByDesc('created_at');
+        $title = 'جميع القنوات';
+
+        return view('admin.channels.channels', compact('users', 'title'));
+    }
 }
