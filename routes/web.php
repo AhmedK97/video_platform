@@ -33,6 +33,8 @@ Route::prefix('/admin')->middleware('can:update-video')->group(function () {
     Route::get('/channels/blocked', [ChannelController::class, 'blockedChannels'])->name('channels.block');
     Route::patch('/{user}/unblock', [ChannelController::class, 'userUnblock'])->name('channel.unblock');
     Route::get('/channels/all', [ChannelController::class, 'Channels'])->name('channel.all');
+
+    Route::get('/mostView', [videoController::class, 'mostView'])->name('mostVideoViews');
 });
 
 Route::middleware([

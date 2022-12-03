@@ -22,12 +22,10 @@ class AdminController extends Controller
         $numberOfUsers = User::all()->count();
         //most users video views
 
-
         $mostViews = View::select('user_id', DB::raw('sum(views.views_number) as total'))
             ->groupBy('user_id')
             ->orderBy('total', 'desc')
             ->take(5)->get();
-
 
         $names = [];
         $totalViews = [];
