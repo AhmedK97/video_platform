@@ -4,7 +4,10 @@
     <div class="mx-4">
         <div class="row justify-content-center">
             <form class="form-inline col-md-6 justify-content-center" action="{{ route('video.search') }}" method="GET">
-                <input type="text" class="mb-2 form-control mx-sm-3" name="term">
+                <input type="text"
+                    placeholder="
+                {{ Request::is('main/*') ? 'البحث في محتوى القناه' : '' }}"
+                    class="mb-2 form-control mx-sm-3" name="term">
                 <button type="submit" class="mb-2 btn btn-secondary">ابحث</button>
             </form>
         </div>
@@ -63,7 +66,7 @@
                                 </small>
                             </div>
 
-                            <a href="{{ route('main.chanels.video', $video->user) }}" class="channel-img">
+                            <a href="{{ route('main.channels.video', $video->user) }}" class="channel-img">
 
                                 <img src="{{ $video->user->profile_photo_url }}" class="my-1 mr-3 rounded-full d-inline"
                                     width="30" alt="">

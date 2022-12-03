@@ -41,40 +41,45 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="mx-auto navbar-nav">
-                    <li class="nav-item">
+                    <li class="nav-item {{ request()->is('/') ? 'active' : '' }}">
                         <a class="nav-link" href="{{ route('main') }}">
                             <i class="fas fa-home">
                                 الصفحه الرئيسية
                             </i>
                         </a>
                     </li>
+                    @auth
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('history') ? 'active' : '' }}"
+                                href="{{ route('history.index') }}">
+                                <i class="fas fa-history">
+                                    سجل المشاهدة
+                                </i>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('videos/create') ? 'active' : '' }}"
+                                href="{{ route('videos.create') }}">
+                                <i class="fas fa-upload">
+                                    رفع فيديو
+                                </i>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('videos') ? 'active' : '' }}"
+                                href="{{ route('videos.index') }}">
+                                <i class="fas fa-play-circle">
+                                    فديوهاتى
+                                </i>
+                            </a>
+                        </li>
+                    @endauth
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('history.index') }}">
-                            <i class="fas fa-history">
-                                سجل المشاهدة
-                            </i>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('videos.create') }}">
-                            <i class="fas fa-upload">
-                                رفع فيديو
-                            </i>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('videos.index') }}">
-                            <i class="fas fa-play-circle">
-                                فديوهاتى
-                            </i>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->is('channel') ? 'active' : '' }}"
+                            href="{{ route('channel.index') }}">
                             <i class="fas fa-film">
                                 القنوات
                             </i>
@@ -86,6 +91,9 @@
                     @guest
                         <li class="mt-2 nav-item">
                             <a href="{{ route('login') }}" class="nav_link">{{ __('تسجيل الدخول') }}</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('register') }}" class="nav-link">{{ __('انشاء حساب') }}</a>
                         </li>
                         @if (Route::has('regester'))
                             <li class="mt-2 nav-item">
@@ -99,6 +107,13 @@
                                     alt="{{ Auth::user()->name }}" />
                             </a>
                             <div class="px-2 mt-2 text-right dropdown-menu dropdown-menu-left">
+                                @can('update-video')
+                                    <a class="dropdown-item" href="{{ route('admin.index') }}">
+                                        <i class="fas fa-user-shield">
+                                            لوحة التحكم
+                                        </i>
+                                    </a>
+                                @endcan
                                 <div class="pt-4 pb-1 border-t border-gray-200">
                                     <div class="flex items-center px-4">
                                         @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\likeController;
@@ -18,8 +20,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/admin', function () {
+    return view('theme.default');
+});
+
+Route::prefix('/admin')->middleware('can:update-video')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/channels', [ChannelController::class, 'adminIndex'])->name('channels.index');
 });
 
 Route::middleware([
@@ -34,7 +41,7 @@ Route::middleware([
 
 route::get('/', [MainController::class, 'main'])->name('main');
 
-route::get('main/{channel}/videos', [MainController::class, 'ChannelsVideo'])->name('main.chanels.video');
+Route::get('/channel', [ChannelController::class, 'index'])->name('channel.index');
 
 
 Route::post('/like', [likeController::class, 'likeVideo'])->name('like');
@@ -62,3 +69,5 @@ Route::post('/history', [HistoryController::class, 'destroyAll'])->name('history
 Route::resource('videos', videoController::class);
 
 Route::get('/video/search', [videoController::class, 'search'])->name('video.search');
+Route::get('main/{channel}/videos', [MainController::class, 'ChannelsVideo'])->name('main.channels.video');
+Route::get('/channel/search', [ChannelController::class, 'search'])->name('channel.search');
