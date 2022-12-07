@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta id="token" name="token" content="{{ csrf_token() }}">
-
+    <link rel="stylesheet" href="{{ asset('theme/css/sb-admin-2.css') }}">
     <title>Video PlatForm</title>
-    {{-- BootStrap --}}
+    {{-- Pusher --}}
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
 
     <!-- Bootstrap CDN Links -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -87,7 +88,35 @@
                     </li>
                 </ul>
 
-                <ul class="navbar-nav ">
+                <ul class="navbar-nav mr-auto">
+
+                    <div class="topbar" style="z-index: 1">
+                        @auth
+                            <li class="nav-item dropdown no-arrow mx-1 alert-dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-bell fa-fw"></i>
+                                    <!-- Counter - Alerts -->
+                                    <span class="badge badge-danger badge-counter notif-count"
+                                        data-count="{{ App\Models\Alert::where('user_id', Auth::user()->id)->first()->alert }}">{{ App\Models\Alert::where('user_id', Auth::user()->id)->first()->alert }}</span>
+                                </a>
+                                </a>
+                                <!-- Dropdown - Alerts -->
+                                <div class="dropdown-list dropdown-menu dropdown-menu-right text-right mt-2 shadow animated--grow-in"
+                                    aria-labelledby="alertsDropdown">
+                                    <h6 class="dropdown-header">
+                                        الاشعارات
+                                    </h6>
+
+                                    <div class="alert-body">
+
+                                    </div>
+                                </div>
+                            </li>
+                        @endauth
+
+                    </div>
+
                     @guest
                         <li class="mt-2 nav-item">
                             <a href="{{ route('login') }}" class="nav_link">{{ __('تسجيل الدخول') }}</a>
@@ -125,7 +154,8 @@
                                         @endif
 
                                         <div>
-                                            <div class="text-base font-medium text-gray-800">{{ Auth::user()->name }}</div>
+                                            <div class="text-base font-medium text-gray-800">{{ Auth::user()->name }}
+                                            </div>
                                             <div class="text-sm font-medium text-gray-500">{{ Auth::user()->email }}</div>
                                         </div>
                                     </div>
@@ -204,6 +234,99 @@
             @yield('content')
         </main>
     </div>
+
+    <script>
+        var token = '{{ Session::token() }}';
+        var urlNotify = '{{ route('notification') }}';
+        $('#alertsDropdown').on('click', function(event) {
+            event.preventDefault();
+            var notificationsWrapper = $('.alert-dropdown');
+            var notificationsToggle = notificationsWrapper.find('a[data-toggle]');
+            var notificationsCountElem = notificationsToggle.find('span[data-count]');
+
+            notificationsCount = 0;
+            notificationsCountElem.attr('data-count', notificationsCount);
+            notificationsWrapper.find('.notif-count').text(notificationsCount);
+            notificationsWrapper.show();
+
+            $.ajax({
+                method: 'POST',
+                url: urlNotify,
+                data: {
+                    _token: token
+                },
+                success: function(data) {
+                    var resposeNotifications = "";
+                    $.each(data.someNotifications, function(i, item) {
+                        var responseDate = new Date(item.created_at);
+                        var date = responseDate.getFullYear() + '-' + (responseDate.getMonth() +
+                            1) + '-' + responseDate.getDate();
+                        var time = responseDate.getHours() + ":" + responseDate.getMinutes() +
+                            ":" + responseDate.getSeconds();
+
+                        if (item.success) {
+                            resposeNotifications += '<a class="dropdown-item d-flex align-items-center" href="#">\
+                                                                                <div class="ml-3">\
+                                                                                    <div class="icon-circle bg-secondary">\
+                                                                                        <i class="far fa-bell text-white"></i>\
+                                                                                    </div>\
+                                                                                </div>\
+                                                                                <div>\
+                                                                                    <div class="small text-gray-500">' +
+                                date +
+                                ' الساعة ' +
+                                time +
+                                '</div>\
+                                                                                    <span>تهانينا لقد تم معالجة مقطع الفيديو <b>' +
+                                item
+                                .notification + '</b> بنجاح</span>\
+                                                                                </div>\
+                                                                            </a>';
+                        } else {
+                            resposeNotifications += '<a class="dropdown-item d-flex align-items-center" href="#">\
+                                                                                <div class="ml-3">\
+                                                                                    <div class="icon-circle bg-secondary">\
+                                                                                        <i class="far fa-bell text-white"></i>\
+                                                                                    </div>\
+                                                                                </div>\
+                                                                                <div>\
+                                                                                    <div class="small text-gray-500">' +
+                                date +
+                                ' الساعة ' +
+                                time +
+                                '</div>\
+                                                                                    <span>للأسف حدث خطأ غير متوقع أثناء معالجة مقطع الفيديو <b>' +
+                                item.notification + '</b> يرجى رفعه مرة أخرى</span>\
+                                                                                </div>\
+                                                                            </a>';
+                        }
+
+                        $('.alert-body').html(resposeNotifications);
+                    });
+                }
+            });
+        });
+    </script>
+
+
+
+    <script>
+        // Enable pusher logging - don't include this in production
+        Pusher.logToConsole = true;
+
+        var pusher = new Pusher('cca5b55f98667b555a47', {
+            cluster: 'mt1'
+        });
+
+        var channel = pusher.subscribe('my-channel');
+        channel.bind('my-event', function(data) {
+            alert(JSON.stringify(data));
+        });
+    </script>
+
+    <script src="{{ asset('theme/js/pushNotifications.js') }}"></script>
+    <script src="{{ asset('theme/js/failedNotifications.js.js') }}"></script>
+
     @yield('script')
 </body>
 

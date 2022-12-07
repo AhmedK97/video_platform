@@ -2,8 +2,12 @@
 
 namespace App\Jobs;
 
+use App\Events\FailedNotification;
+use App\Events\RealNotification;
+use App\Models\Alert;
 use App\Models\Video;
 use App\Models\Convertedvideo;
+use App\Models\Notification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -176,6 +180,26 @@ class ConvertVideoForStreaming implements ShouldQueue
         $converted_video->video_id = $this->video->id;
         $converted_video->save();
 
+
+
+        $notification = new Notification();
+        $notification->user_id = $this->video->user_id;
+        $notification->notification = $this->video->title;
+        $notification->save();
+
+
+        $data = [
+            'video_title' => $this->video->title,
+        ];
+
+        event(
+            new RealNotification($data)
+        );
+
+        $alert = Alert::where('user_id', $this->video->user_id)->first();
+        $alert->alert++;
+        $alert->save();
+
         $this->video->update([
             'processed' => true,
             'hours' => $hours,
@@ -185,20 +209,25 @@ class ConvertVideoForStreaming implements ShouldQueue
         ]);
     }
 
+    public function failed()
+    {
+        $notification = new Notification();
+        $notification->notification = $this->video->title;
+        $notification->success = false;
+        $notification->save();
 
+        $data = [
+            'video_title' => $this->video->title,
+        ];
+
+        event(new FailedNotification($data));
+        $alert = Alert::where('user_id', $this->video->user_id)->first();
+        $alert->alert++;
+        $alert->save();
+    }
 
     private function getFileName($filename, $type)
     {
         return preg_replace('/\\.[^.\\s]{3,4}$/', '', $filename) . $type;
     }
-
-    //   ffmpeg convert video h264?
-    //   $ffmpeg = FFMpeg\FFMpeg::create();
-
-    //   $video = $ffmpeg->open('path/to/movie.mov');
-    //   $format->setAudioCodec("libmp3lame");
-
-    //  $video
-    //      ->save($format, 'path/to/movie.mp4');
-
 }
