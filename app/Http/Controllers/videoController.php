@@ -230,8 +230,7 @@ class videoController extends Controller
             $videoNames[] = video::find($view->video_id)->title;
             $videoViews[] = $view->views_number;
         }
-        dd($videoNames);
-        dd(json_encode($videoNames, JSON_NUMERIC_CHECK));
+
         return view('admin.most-view', compact('mostViewedVideos'))
             ->with('videoNames', json_encode($videoNames, JSON_NUMERIC_CHECK))
             ->with('videoViews', json_encode($videoViews, JSON_NUMERIC_CHECK));
